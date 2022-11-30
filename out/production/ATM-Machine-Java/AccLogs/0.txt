@@ -1,0 +1,2 @@
+Date: Wed Nov 30 18:35:59 EST 2022 ; Customer Account Number: 0 ; Transaction Type: DEPOSITSAVINGS ; Amount Changed: $75.0
+Date: Wed Nov 30 18:36:17 EST 2022 ; Customer Account Number: 0 ; Transaction Type: TRANSFERCHECKINGTOSAVINGS ; Amount Changed: $100.0

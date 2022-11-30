@@ -50,9 +50,8 @@ public class OptionMenu {
 				System.out.println("\nSelect the account you want to access: ");
 				System.out.println(" Type 1 - Checkings Account");
 				System.out.println(" Type 2 - Savings Account");
-				System.out.println(" Type 3 - Checkings and Savings Balance");
-				System.out.println(" Type 4 - View Transaction History");
-				System.out.println(" Type 5 - Exit");
+				System.out.println(" Type 3 - View Transaction History");
+				System.out.println(" Type 4 - Exit");
 				System.out.print("\nChoice: ");
 
 				int selection = menuInput.nextInt();
@@ -65,11 +64,8 @@ public class OptionMenu {
 						getSaving(acc);
 						break;
 					case 3:
-						getCheckingAndSavingsBalance(acc);
-						break;
-					case 4:
 						readTransactionHistoryFromFile(acc);
-					case 5:
+					case 4:
 						end = true;
 						writeAccToFile();
 						break;
@@ -163,10 +159,6 @@ public class OptionMenu {
 				menuInput.next();
 			}
 		}
-	}
-	public void getCheckingAndSavingsBalance(Account account){
-		System.out.println("Checking Balance: " + account.getCheckingBalance()
-				+ " | Savings Balance: " + account.getSavingBalance());
 	}
 
 	public void createAccount() throws IOException {
