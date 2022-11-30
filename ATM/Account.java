@@ -1,4 +1,9 @@
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.Date;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -92,6 +97,8 @@ public class Account {
 				double amount = input.nextDouble();
 				if ((checkingBalance - amount) >= 0 && amount >= 0) {
 					calcCheckingWithdraw(amount);
+					logAccountTransactionDataToFile(TransactionTypes.WITHDRAWCHECKING,amount);
+					logTransactionDataToFile(TransactionTypes.WITHDRAWCHECKING,amount);
 					System.out.println("\nCurrent Checkings Account Balance: " + moneyFormat.format(checkingBalance));
 					end = true;
 				} else {
@@ -100,6 +107,8 @@ public class Account {
 			} catch (InputMismatchException e) {
 				System.out.println("\nInvalid Choice.");
 				input.next();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
 			}
 		}
 	}
@@ -113,6 +122,8 @@ public class Account {
 				double amount = input.nextDouble();
 				if ((savingBalance - amount) >= 0 && amount >= 0) {
 					calcSavingWithdraw(amount);
+					logAccountTransactionDataToFile(TransactionTypes.WITHDRAWSAVINGS,amount);
+					logTransactionDataToFile(TransactionTypes.WITHDRAWSAVINGS,amount);
 					System.out.println("\nCurrent Savings Account Balance: " + moneyFormat.format(savingBalance));
 					end = true;
 				} else {
@@ -121,6 +132,8 @@ public class Account {
 			} catch (InputMismatchException e) {
 				System.out.println("\nInvalid Choice.");
 				input.next();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
 			}
 		}
 	}
@@ -130,10 +143,12 @@ public class Account {
 		while (!end) {
 			try {
 				System.out.println("\nCurrent Checkings Account Balance: " + moneyFormat.format(checkingBalance));
-				System.out.print("\nAmount you want to deposit from Checkings Account: ");
+				System.out.print("\nAmount you want to deposit to Checkings Account: ");
 				double amount = input.nextDouble();
 				if ((checkingBalance + amount) >= 0 && amount >= 0) {
 					calcCheckingDeposit(amount);
+					logAccountTransactionDataToFile(TransactionTypes.DEPOSITCHECKING,amount);
+					logTransactionDataToFile(TransactionTypes.DEPOSITCHECKING,amount);
 					System.out.println("\nCurrent Checkings Account Balance: " + moneyFormat.format(checkingBalance));
 					end = true;
 				} else {
@@ -142,6 +157,8 @@ public class Account {
 			} catch (InputMismatchException e) {
 				System.out.println("\nInvalid Choice.");
 				input.next();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
 			}
 		}
 	}
@@ -156,6 +173,8 @@ public class Account {
 
 				if ((savingBalance + amount) >= 0 && amount >= 0) {
 					calcSavingDeposit(amount);
+					logAccountTransactionDataToFile(TransactionTypes.DEPOSITSAVINGS,amount);
+					logTransactionDataToFile(TransactionTypes.DEPOSITSAVINGS,amount);
 					System.out.println("\nCurrent Savings Account Balance: " + moneyFormat.format(savingBalance));
 					end = true;
 				} else {
@@ -164,6 +183,8 @@ public class Account {
 			} catch (InputMismatchException e) {
 				System.out.println("\nInvalid Choice.");
 				input.next();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
 			}
 		}
 	}
@@ -179,25 +200,27 @@ public class Account {
 					System.out.print("\nChoice: ");
 					int choice = input.nextInt();
 					switch (choice) {
-					case 1:
-						System.out.println("\nCurrent Checkings Account Balance: " + moneyFormat.format(checkingBalance));
-						System.out.print("\nAmount you want to deposit into your Savings Account: ");
-						double amount = input.nextDouble();
-						if ((savingBalance + amount) >= 0 && (checkingBalance - amount) >= 0 && amount >= 0) {
-							calcCheckTransfer(amount);
-							System.out.println("\nCurrent Savings Account Balance: " + moneyFormat.format(savingBalance));
-							System.out.println(
-									"\nCurrent Checkings Account Balance: " + moneyFormat.format(checkingBalance));
-							end = true;
-						} else {
-							System.out.println("\nBalance Cannot Be Negative.");
-						}
-						break;
-					case 2:
-						return;
-					default:
-						System.out.println("\nInvalid Choice.");
-						break;
+						case 1:
+							System.out.println("\nCurrent Checkings Account Balance: " + moneyFormat.format(checkingBalance));
+							System.out.print("\nAmount you want to deposit into your Savings Account: ");
+							double amount = input.nextDouble();
+							if ((savingBalance + amount) >= 0 && (checkingBalance - amount) >= 0 && amount >= 0) {
+								calcCheckTransfer(amount);
+								logAccountTransactionDataToFile(TransactionTypes.TRANSFERCHECKINGTOSAVINGS,amount);
+								logTransactionDataToFile(TransactionTypes.TRANSFERCHECKINGTOSAVINGS,amount);
+								System.out.println("\nCurrent Savings Account Balance: " + moneyFormat.format(savingBalance));
+								System.out.println(
+										"\nCurrent Checkings Account Balance: " + moneyFormat.format(checkingBalance));
+								end = true;
+							} else {
+								System.out.println("\nBalance Cannot Be Negative.");
+							}
+							break;
+						case 2:
+							return;
+						default:
+							System.out.println("\nInvalid Choice.");
+							break;
 					}
 				} else if (accType.equals("Savings")) {
 					System.out.println("\nSelect an account you wish to tranfers funds to: ");
@@ -206,30 +229,50 @@ public class Account {
 					System.out.print("\nChoice: ");
 					int choice = input.nextInt();
 					switch (choice) {
-					case 1:
-						System.out.println("\nCurrent Savings Account Balance: " + moneyFormat.format(savingBalance));
-						System.out.print("\nAmount you want to deposit into your savings account: ");
-						double amount = input.nextDouble();
-						if ((checkingBalance + amount) >= 0 && (savingBalance - amount) >= 0 && amount >= 0) {
-							calcSavingTransfer(amount);
-							System.out.println("\nCurrent checkings account balance: " + moneyFormat.format(checkingBalance));
-							System.out.println("\nCurrent savings account balance: " + moneyFormat.format(savingBalance));
-							end = true;
-						} else {
-							System.out.println("\nBalance Cannot Be Negative.");
-						}
-						break;
-					case 2:
-						return;
-					default:
-						System.out.println("\nInvalid Choice.");
-						break;
+						case 1:
+							System.out.println("\nCurrent Savings Account Balance: " + moneyFormat.format(savingBalance));
+							System.out.print("\nAmount you want to deposit into your savings account: ");
+							double amount = input.nextDouble();
+							if ((checkingBalance + amount) >= 0 && (savingBalance - amount) >= 0 && amount >= 0) {
+								calcSavingTransfer(amount);
+								logAccountTransactionDataToFile(TransactionTypes.TRANSFERSAVINGSTOCHECKING,amount);
+								logTransactionDataToFile(TransactionTypes.TRANSFERSAVINGSTOCHECKING,amount);
+								System.out.println("\nCurrent checkings account balance: " + moneyFormat.format(checkingBalance));
+								System.out.println("\nCurrent savings account balance: " + moneyFormat.format(savingBalance));
+								end = true;
+							} else {
+								System.out.println("\nBalance Cannot Be Negative.");
+							}
+							break;
+						case 2:
+							return;
+						default:
+							System.out.println("\nInvalid Choice.");
+							break;
 					}
 				}
 			} catch (InputMismatchException e) {
 				System.out.println("\nInvalid Choice.");
 				input.next();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
 			}
 		}
+	}
+
+	public void logTransactionDataToFile(TransactionTypes logType, double number) throws IOException {
+		File file = new File("ATM/ATMlogs.txt");
+		BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
+		Date date = new Date();
+		bw.write(String.format("Date: %s ; Customer Account Number: %s ; Transaction Type: %s ; Amount Changed: $%s\n", date, customerNumber, logType, number));
+		bw.close();
+	}
+
+	public void logAccountTransactionDataToFile(TransactionTypes logType, double number) throws IOException {
+		File file = new File(String.format("ATM/AccLogs/%s.txt", customerNumber));
+		Date date = new Date();
+		BufferedWriter bw = new BufferedWriter(new FileWriter(file, true));
+		bw.write(String.format("Date: %s ; Customer Account Number: %s ; Transaction Type: %s ; Amount Changed: $%s\n", date, customerNumber, logType, number));
+		bw.close();
 	}
 }

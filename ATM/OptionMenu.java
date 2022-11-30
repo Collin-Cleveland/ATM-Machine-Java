@@ -1,10 +1,13 @@
-import java.io.IOException;
+import java.io.*;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
+
+import static java.lang.Double.parseDouble;
+import static java.lang.Integer.parseInt;
 
 public class OptionMenu {
 	Scanner menuInput = new Scanner(System.in);
@@ -47,27 +50,37 @@ public class OptionMenu {
 				System.out.println("\nSelect the account you want to access: ");
 				System.out.println(" Type 1 - Checkings Account");
 				System.out.println(" Type 2 - Savings Account");
-				System.out.println(" Type 3 - Exit");
+				System.out.println(" Type 3 - Checkings and Savings Balance");
+				System.out.println(" Type 4 - View Transaction History");
+				System.out.println(" Type 5 - Exit");
 				System.out.print("\nChoice: ");
 
 				int selection = menuInput.nextInt();
 
 				switch (selection) {
-				case 1:
-					getChecking(acc);
-					break;
-				case 2:
-					getSaving(acc);
-					break;
-				case 3:
-					end = true;
-					break;
-				default:
-					System.out.println("\nInvalid Choice.");
+					case 1:
+						getChecking(acc);
+						break;
+					case 2:
+						getSaving(acc);
+						break;
+					case 3:
+						getCheckingAndSavingsBalance(acc);
+						break;
+					case 4:
+						readTransactionHistoryFromFile(acc);
+					case 5:
+						end = true;
+						writeAccToFile();
+						break;
+					default:
+						System.out.println("\nInvalid Choice.");
 				}
 			} catch (InputMismatchException e) {
 				System.out.println("\nInvalid Choice.");
 				menuInput.next();
+			} catch (IOException e) {
+
 			}
 		}
 	}
@@ -87,24 +100,24 @@ public class OptionMenu {
 				int selection = menuInput.nextInt();
 
 				switch (selection) {
-				case 1:
-					System.out.println("\nCheckings Account Balance: " + moneyFormat.format(acc.getCheckingBalance()));
-					break;
-				case 2:
-					acc.getCheckingWithdrawInput();
-					break;
-				case 3:
-					acc.getCheckingDepositInput();
-					break;
+					case 1:
+						System.out.println("\nCheckings Account Balance: " + moneyFormat.format(acc.getCheckingBalance()));
+						break;
+					case 2:
+						acc.getCheckingWithdrawInput();
+						break;
+					case 3:
+						acc.getCheckingDepositInput();
+						break;
 
-				case 4:
-					acc.getTransferInput("Checkings");
-					break;
-				case 5:
-					end = true;
-					break;
-				default:
-					System.out.println("\nInvalid Choice.");
+					case 4:
+						acc.getTransferInput("Checkings");
+						break;
+					case 5:
+						end = true;
+						break;
+					default:
+						System.out.println("\nInvalid Choice.");
 				}
 			} catch (InputMismatchException e) {
 				System.out.println("\nInvalid Choice.");
@@ -126,29 +139,34 @@ public class OptionMenu {
 				System.out.print("Choice: ");
 				int selection = menuInput.nextInt();
 				switch (selection) {
-				case 1:
-					System.out.println("\nSavings Account Balance: " + moneyFormat.format(acc.getSavingBalance()));
-					break;
-				case 2:
-					acc.getsavingWithdrawInput();
-					break;
-				case 3:
-					acc.getSavingDepositInput();
-					break;
-				case 4:
-					acc.getTransferInput("Savings");
-					break;
-				case 5:
-					end = true;
-					break;
-				default:
-					System.out.println("\nInvalid Choice.");
+					case 1:
+						System.out.println("\nSavings Account Balance: " + moneyFormat.format(acc.getSavingBalance()));
+						break;
+					case 2:
+						acc.getsavingWithdrawInput();
+						break;
+					case 3:
+						acc.getSavingDepositInput();
+						break;
+					case 4:
+						acc.getTransferInput("Savings");
+						break;
+					case 5:
+
+						end = true;
+						break;
+					default:
+						System.out.println("\nInvalid Choice.");
 				}
 			} catch (InputMismatchException e) {
 				System.out.println("\nInvalid Choice.");
 				menuInput.next();
 			}
 		}
+	}
+	public void getCheckingAndSavingsBalance(Account account){
+		System.out.println("Checking Balance: " + account.getCheckingBalance()
+				+ " | Savings Balance: " + account.getSavingBalance());
 	}
 
 	public void createAccount() throws IOException {
@@ -182,8 +200,9 @@ public class OptionMenu {
 	}
 
 	public void mainMenu() throws IOException {
-		data.put(952141, new Account(952141, 191904, 1000, 5000));
-		data.put(123, new Account(123, 123, 20000, 50000));
+		readAccFromFile();
+//		data.put(952141, new Account(952141, 191904, 1000, 5000));
+//		data.put(123, new Account(123, 123, 20000, 50000));
 		boolean end = false;
 		while (!end) {
 			try {
@@ -192,16 +211,16 @@ public class OptionMenu {
 				System.out.print("\nChoice: ");
 				int choice = menuInput.nextInt();
 				switch (choice) {
-				case 1:
-					getLogin();
-					end = true;
-					break;
-				case 2:
-					createAccount();
-					end = true;
-					break;
-				default:
-					System.out.println("\nInvalid Choice.");
+					case 1:
+						getLogin();
+						end = true;
+						break;
+					case 2:
+						createAccount();
+						end = true;
+						break;
+					default:
+						System.out.println("\nInvalid Choice.");
 				}
 			} catch (InputMismatchException e) {
 				System.out.println("\nInvalid Choice.");
@@ -211,5 +230,42 @@ public class OptionMenu {
 		System.out.println("\nThank You for using this ATM.\n");
 		menuInput.close();
 		System.exit(0);
+	}
+
+	public void writeAccToFile() throws IOException {
+		BufferedWriter bw = new BufferedWriter(new FileWriter("ATM/accDataBase.txt"));
+		for (Account acc : data.values()
+		) {
+			int customerNumber = acc.getCustomerNumber();
+			int pin = acc.getPinNumber();
+			double cBal = acc.getCheckingBalance();
+			double sBal = acc.getSavingBalance();
+			bw.write(String.format("%s, %s, %s, %s\n", customerNumber, pin, cBal, sBal));
+		}
+		bw.close();
+	}
+
+	public void readAccFromFile() throws IOException {
+		BufferedReader br = new BufferedReader(new FileReader("ATM/accDataBase.txt"));
+		String line;
+		while((line = br.readLine()) != null){
+			String [] parts = line.split(", ");
+			int customerNumber = parseInt(parts[0]);
+			int pin = parseInt(parts[1]);
+			double cBal = parseDouble(parts[2]);
+			double sBal = parseDouble(parts[3]);
+			data.put(customerNumber,new Account(customerNumber,pin,cBal,sBal));
+		}
+		br.close();
+	}
+
+	public void readTransactionHistoryFromFile(Account acc) throws IOException {
+		File file = new File(String.format("ATM/AccLogs/%s.txt", acc.getCustomerNumber()));
+		BufferedReader br = new BufferedReader(new FileReader(file));
+		String line;
+		while ((line = br.readLine()) != null){
+			System.out.println(line);
+		}
+		br.close();
 	}
 }
