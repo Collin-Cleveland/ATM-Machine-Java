@@ -1,1 +1,2 @@
 Date: Wed Nov 30 17:04:50 EST 2022 ; Customer Account Number: 69 ; Transaction Type: WITHDRAWCHECKING ; Amount Changed: $54.0
+Date: Wed Nov 30 19:06:56 EST 2022 ; Customer Account Number: 69 ; Transaction Type: TRANSFERSAVINGSTOCHECKING ; Amount Changed: $2500.0

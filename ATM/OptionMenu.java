@@ -65,6 +65,7 @@ public class OptionMenu {
 						break;
 					case 3:
 						readTransactionHistoryFromFile(acc);
+						break;
 					case 4:
 						end = true;
 						writeAccToFile();
